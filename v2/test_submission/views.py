@@ -19,6 +19,6 @@ def allsubmissions(request, user_id):
 def newsubmission(request, user_id):
 
 	s1 = models.Classcast_test_submission(student_id=user_id, xblock_id='abcd', num_attempts=1, 
-		num_skips=0, num_incorrect_attempts=0, average_time_skip=None, average_time_skip=None, timestamp=None)
+		num_skips=0, num_incorrect_attempts=0, average_time_attempt=None, average_time_skip=None, timestamp=None)
 
 	s1.save()
