@@ -8,7 +8,7 @@ def hello(request):
    return HttpResponse(text)
 
 
-def crudops(request):
+def allsubmissions(request):
    
 	#Read all entries
 

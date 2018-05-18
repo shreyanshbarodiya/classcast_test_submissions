@@ -8,5 +8,5 @@ urlpatterns = patterns(
     '',
     # url(r'^allsubmissions/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.AllTestSubmissions.as_view()),
     url(r'^hello$', views.hello, name = 'hello'),
-url(r'^crudops$', views.crudops, name='crudops'),
+	url(r'^allsubmissions/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.allsubmissions, name='allsubmissions'),
 )
