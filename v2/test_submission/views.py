@@ -2,6 +2,7 @@ from django.http import HttpResponse
 import models
 import api
 from django.http import JsonResponse
+from django.core import serializers
 
 def hello(request):
    text = """<h1>welcome to my app !</h1>"""
@@ -12,9 +13,8 @@ def allsubmissions(request, user_id):
    
 	res = models.Classcast_test_submission.objects.all()
 	# res = api.get_all_student_test_submission(user_id)
-
-	return HttpResponse(res)
-
+    res_json = serializers.serialize('json', res)
+    return HttpResponse(res_json, content_type='application/json')
 
 def newsubmission(request, user_id):
 
