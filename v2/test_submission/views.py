@@ -24,3 +24,8 @@ def newsubmission(request, user_id):
 	s1.save()
 
 	return JsonResponse({'status': 'True'})
+
+def curruser(request):
+	userr=request.user
+
+	return JsonResponse(userr)
