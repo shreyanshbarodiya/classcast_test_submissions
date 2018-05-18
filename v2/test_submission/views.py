@@ -16,11 +16,41 @@ def allsubmissions(request, user_id):
 	return HttpResponse(res_json, content_type='application/json')
 
 def newsubmission(request, user_id):
+	if not request.user.is_authenticated():
+		return JsonResponse({'status': 'False', 'Message': 'Not authenticated'})
 
-	s1 = models.Classcast_test_submission(student_id=user_id, xblock_id='abcd', num_attempts=1, 
-		num_skips=0, num_incorrect_attempts=0, average_time_attempt=None, average_time_skip=None, timestamp=None)
+	if(request.method == "GET"):
+		return JsonResponse({'status': 'False', 'Message': 'Get request'})
+	else:
+		student_id = request.user.id
+		xblock_id = request.POST['xblock_id']
+		attempted = request.POST['attempted']
+		correctly_attempted = request.POST['correctly_attempted']
+		time_taken = request.POST['time_taken']
+		timestamp = request.POST['timestamp']
 
-	s1.save()
+		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
+			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
+			if(attempted==1):
+				entry.num_attempts += 1
+				entry.num_incorrect_attempts += 1 - correctly_attempted
+				entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
+				entry.timestamp = timestamp
+			else:
+				entry.num_skips += 1
+				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
+				entry.timestamp = timestamp
+			entry.save()
+		else:
+			if(attempted==1):
+				s1 = models.Classcast_test_submission(student_id=user_id, 
+					xblock_id=xblock_id, num_attempts=1, num_skips=0, 
+					num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, average_time_skip=0, timestamp=timestamp)
+			else:
+				s1 = models.Classcast_test_submission(student_id=user_id, 
+					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
+					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
+			s1.save()
 
 	return JsonResponse({'status': 'True'})
 
