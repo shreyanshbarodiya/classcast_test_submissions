@@ -8,7 +8,7 @@ def hello(request):
    return HttpResponse(text)
 
 
-def allsubmissions(request):
+def allsubmissions(request, user_id):
    
 	#Read all entries
 
@@ -18,7 +18,7 @@ def allsubmissions(request):
 	# for elt in objects:
 	# 	res += elt.xblock_id+"<br>"   
 
-	res = api.get_all_student_test_submission(1)
+	res = api.get_all_student_test_submission(user_id)
 
 	#return JsonResponse({'foo':'bar'})
 	return JsonResponse(res, safe=False)
