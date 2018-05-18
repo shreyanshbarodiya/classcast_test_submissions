@@ -10,5 +10,5 @@ urlpatterns = patterns(
     url(r'^hello$', views.hello, name = 'hello'),
     url(r'^curruser$', views.curruser, name = 'curruser'),
 	url(r'^allsubmissions/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.allsubmissions, name='allsubmissions'),
-	url(r'^newsubmission/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.newsubmission, name='newsubmission'),
+	url(r'^newsubmission$', views.newsubmission, name='newsubmission'),
 )

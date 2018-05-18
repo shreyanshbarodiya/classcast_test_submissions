@@ -15,7 +15,7 @@ def allsubmissions(request, user_id):
 	res_json = serializers.serialize('json', res)
 	return HttpResponse(res_json, content_type='application/json')
 
-def newsubmission(request, user_id):
+def newsubmission(request):
 	if not request.user.is_authenticated():
 		return JsonResponse({'status': 'False', 'Message': 'Not authenticated'})
 
@@ -43,11 +43,11 @@ def newsubmission(request, user_id):
 			entry.save()
 		else:
 			if(attempted==1):
-				s1 = models.Classcast_test_submission(student_id=user_id, 
+				s1 = models.Classcast_test_submission(student_id=student_id, 
 					xblock_id=xblock_id, num_attempts=1, num_skips=0, 
 					num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, average_time_skip=0, timestamp=timestamp)
 			else:
-				s1 = models.Classcast_test_submission(student_id=user_id, 
+				s1 = models.Classcast_test_submission(student_id=student_id, 
 					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
 					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
 			s1.save()
