@@ -10,6 +10,7 @@ class Classcast_test_submission(models.Model):
     num_incorrect_attempts = models.IntegerField()
     average_time_attempt = models.DurationField()
     average_time_skip = models.DurationField()
+    timestamp = models.DateTimeField()
 
     class Meta:
         managed = False
