@@ -8,6 +8,7 @@ sql_pswd = MYSQL_PSWD
 mysql_db = MYSQL_DB
 mongo_db = MONGO_DB
 
+#Complicated queries that cannot be handled using models
 
 def get_all_student_test_submission(user_id):
     
