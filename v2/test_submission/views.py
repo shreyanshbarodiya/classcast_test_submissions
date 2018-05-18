@@ -13,7 +13,7 @@ def allsubmissions(request, user_id):
 	res = models.Classcast_test_submission.objects.filter(student_id=user_id)
 	# res = api.get_all_student_test_submission(user_id)
 
-	return JsonResponse(res, safe=False	)
+	return HttpResponse(res)
 
 
 def newsubmission(request, user_id):
@@ -26,6 +26,9 @@ def newsubmission(request, user_id):
 	return JsonResponse({'status': 'True'})
 
 def curruser(request):
-	userr=request.user
 
-	return JsonResponse(userr)
+	if request.user.is_authenticated():
+		res = request.user.id
+	else:
+		res = 'Not authenticated'
+	return HttpResponse(res)
