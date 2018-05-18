@@ -12,9 +12,8 @@ def hello(request):
 def allsubmissions(request, user_id):
    
 	res = models.Classcast_test_submission.objects.all()
-	# res = api.get_all_student_test_submission(user_id)
-    res_json = serializers.serialize('json', res)
-    return HttpResponse(res_json, content_type='application/json')
+	res_json = serializers.serialize('json', res)
+	return HttpResponse(res_json, content_type='application/json')
 
 def newsubmission(request, user_id):
 
