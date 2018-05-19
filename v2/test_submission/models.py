@@ -18,4 +18,4 @@ class Classcast_test_submission(models.Model):
         db_table = 'classcast_test_submissions'
 
     def __str__(self):
-        return u'%d %s' % (self.student_id, self.xblock_id)
+        return u'%s %s' % (str(self.student_id), str(self.xblock_id))
