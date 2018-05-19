@@ -25,14 +25,14 @@ def newsubmission(request):
 		return JsonResponse({'status': 'False', 'Message': 'Get request'})
 	else:
 		# student_id = request.user.id
-		student_id = request.POST.get('student_id')
+		student_id = int(request.POST.get('student_id'))
 		xblock_id = request.POST.get('xblock_id')
-		attempted = request.POST.get('attempted')
-		correctly_attempted = request.POST.get('correctly_attempted')
-		time_taken = request.POST.get('time_taken')
+		attempted = int(request.POST.get('attempted'))
+		correctly_attempted = int(request.POST.get('correctly_attempted'))
+		time_taken = float(request.POST.get('time_taken'))
 		timestamp = request.POST.get('timestamp')
-		appeared_in_test = request.POST.get('appeared_in_test')
-		appeared_in_gym = request.POST.get('appeared_in_gym')
+		appeared_in_test = int(request.POST.get('appeared_in_test'))
+		appeared_in_gym = int(request.POST.get('appeared_in_gym'))
 
 		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
 			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
