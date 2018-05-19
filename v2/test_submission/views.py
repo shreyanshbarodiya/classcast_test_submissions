@@ -47,9 +47,9 @@ def newsubmission(request):
 			entry.timestamp = timestamp
 			entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
 			entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
-			entry_json = serializers.serialize('json', entry)
-			return HttpResponse(entry_json, content_type='application/json')
-			# entry.save()
+			# entry_json = serializers.serialize('json', entry)
+			# return HttpResponse(entry_json, content_type='application/json')
+			entry.save()
 		else:
 			if(attempted==1):
 				s1 = models.Classcast_test_submission(student_id=student_id, 
@@ -63,9 +63,9 @@ def newsubmission(request):
 			
 			s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 			s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-			s1_json = serializers.serialize('json', s1)
-			return HttpResponse(s1_json, content_type='application/json')
-			# s1.save()
+			# s1_json = serializers.serialize('json', s1)
+			# return HttpResponse(s1_json, content_type='application/json')
+			s1.save()
 
 	return JsonResponse({'status': 'True'})
 
