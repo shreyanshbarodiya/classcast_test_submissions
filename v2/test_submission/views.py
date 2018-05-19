@@ -56,15 +56,19 @@ def newsubmission(request):
 					xblock_id=xblock_id, num_attempts=1, num_skips=0, 
 					num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
 					average_time_skip=0, timestamp=timestamp)
+				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				return HttpResponse(s1, content_type='application/json')
+	
 			else:
 				s1 = models.Classcast_test_submission(student_id=student_id, 
 					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
 					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
 			
-			s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-			s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				return HttpResponse(s1, content_type='application/json')
 			# s1_json = serializers.serialize('json', s1)
-			return HttpResponse(s1, content_type='application/json')
 			# s1.save()
 
 	return JsonResponse({'status': 'True'})
