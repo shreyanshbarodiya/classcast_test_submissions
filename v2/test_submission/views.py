@@ -64,8 +64,8 @@ def newsubmission(request):
 			s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 			s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
 			# s1_json = serializers.serialize('json', s1)
-			# return HttpResponse(s1_json, content_type='application/json')
-			s1.save()
+			return HttpResponse(s1, content_type='application/json')
+			# s1.save()
 
 	return JsonResponse({'status': 'True'})
 
