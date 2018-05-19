@@ -11,6 +11,8 @@ class Classcast_test_submission(models.Model):
     average_time_attempt = models.FloatField()
     average_time_skip = models.FloatField()
     timestamp = models.DateTimeField()
+    correctly_attempted_in_test = models.BooleanField()
+    correctly_attempted_in_gym = models.BooleanField()
 
     class Meta:
         db_table = 'classcast_test_submissions'
