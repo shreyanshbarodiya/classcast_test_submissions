@@ -24,54 +24,54 @@ def newsubmission(request):
 	if(request.method == "GET"):
 		return JsonResponse({'status': 'False', 'message': 'Get request'})
 	else:
-		# try:
+		try:
 
-		# student_id = request.user.id
-		student_id = (request.POST.get('student_id'))
-		xblock_id = request.POST.get('xblock_id')
-		attempted = (request.POST.get('attempted'))
-		correctly_attempted = (request.POST.get('correctly_attempted'))
-		time_taken = float(request.POST.get('time_taken'))
-		timestamp = request.POST.get('timestamp')
-		appeared_in_test = (request.POST.get('appeared_in_test'))
-		appeared_in_gym = (request.POST.get('appeared_in_gym'))
+			# student_id = request.user.id
+			student_id = int(request.POST.get('student_id'))
+			xblock_id = request.POST.get('xblock_id')
+			attempted = int(request.POST.get('attempted'))
+			correctly_attempted = (request.POST.get('correctly_attempted'))
+			time_taken = float(request.POST.get('time_taken'))
+			timestamp = request.POST.get('timestamp')
+			appeared_in_test = int(request.POST.get('appeared_in_test'))
+			appeared_in_gym = int(request.POST.get('appeared_in_gym'))
 
-		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
-			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
-			if(attempted==1):
-				entry.num_attempts += 1
-				entry.num_incorrect_attempts += 1 - correctly_attempted
-				entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
+			if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
+				entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
+				if(attempted==1):
+					entry.num_attempts += 1
+					entry.num_incorrect_attempts += 1 - correctly_attempted
+					entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
+				else:
+					entry.num_skips += 1
+					entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
+				
+				entry.timestamp = timestamp
+				entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
+				entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
+				entry.save()
+				return JsonResponse({'status': 'True', 'message': 'Success'})
 			else:
-				entry.num_skips += 1
-				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
-			
-			entry.timestamp = timestamp
-			entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
-			entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
-			entry.save()
-			return JsonResponse({'status': 'True', 'message': 'Success'})
-		else:
-			if(attempted==1):
-				s1 = models.Classcast_test_submission(student_id=student_id, 
-					xblock_id=xblock_id, num_attempts=1, num_skips=0, 
-					num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
-					average_time_skip=0, timestamp=timestamp)
-				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-				s1.save()		
-			else:
-				s1 = models.Classcast_test_submission(student_id=student_id, 
-					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
-					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
-			
-				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-				s1.save()
-			return JsonResponse({'status': 'True', 'message': 'Success'})
+				if(attempted==1):
+					s1 = models.Classcast_test_submission(student_id=student_id, 
+						xblock_id=xblock_id, num_attempts=1, num_skips=0, 
+						num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
+						average_time_skip=0, timestamp=timestamp)
+					s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+					s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+					s1.save()		
+				else:
+					s1 = models.Classcast_test_submission(student_id=student_id, 
+						xblock_id=xblock_id, num_attempts=0, num_skips=1, 
+						num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
+				
+					s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+					s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+					s1.save()
+				return JsonResponse({'status': 'True', 'message': 'Success'})
 
-		# except Exception, e:
-		# 	return JsonResponse({'status': 'False', 'message': 'Database error'})
+		except Exception, e:
+			return JsonResponse({'status': 'False', 'message': 'Database error'})
 
 def curruser(request):
 
