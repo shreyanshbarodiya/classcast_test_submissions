@@ -3,6 +3,7 @@ import models
 import api
 from django.http import JsonResponse
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt  
 
 def hello(request):
    text = """<h1>welcome to my app !</h1>"""
