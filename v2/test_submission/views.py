@@ -30,7 +30,7 @@ def newsubmission(request):
 			student_id = int(request.POST.get('student_id'))
 			xblock_id = request.POST.get('xblock_id')
 			attempted = int(request.POST.get('attempted'))
-			correctly_attempted = (request.POST.get('correctly_attempted'))
+			correctly_attempted = int(request.POST.get('correctly_attempted'))
 			time_taken = float(request.POST.get('time_taken'))
 			timestamp = request.POST.get('timestamp')
 			appeared_in_test = int(request.POST.get('appeared_in_test'))
