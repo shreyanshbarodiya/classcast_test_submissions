@@ -18,13 +18,14 @@ def allsubmissions(request, user_id):
 
 @csrf_exempt
 def newsubmission(request):
-	if not request.user.is_authenticated():
-		return JsonResponse({'status': 'False', 'Message': 'Not authenticated'})
+	# if not request.user.is_authenticated():
+	# 	return JsonResponse({'status': 'False', 'Message': 'Not authenticated'})
 
 	if(request.method == "GET"):
 		return JsonResponse({'status': 'False', 'Message': 'Get request'})
 	else:
-		student_id = request.user.id
+		# student_id = request.user.id
+		student_id = request.POST['student_id']
 		xblock_id = request.POST['xblock_id']
 		attempted = request.POST['attempted']
 		correctly_attempted = request.POST['correctly_attempted']
