@@ -58,6 +58,7 @@ def newsubmission(request):
 					average_time_skip=0, timestamp=timestamp)
 				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				s1.save()
 				return HttpResponse(s1, content_type='application/json')
 	
 			else:
@@ -67,9 +68,9 @@ def newsubmission(request):
 			
 				s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 				s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				s1.save()
 				return HttpResponse(s1, content_type='application/json')
 			# s1_json = serializers.serialize('json', s1)
-			# s1.save()
 
 	return JsonResponse({'status': 'True'})
 
