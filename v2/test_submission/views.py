@@ -73,8 +73,12 @@ def newsubmission(request):
 				sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
 				sub.save()
 
-				student_info.total_karma_points += question_info.marks
-				karma_history.karma_points += question_info.marks
+				if(correctly_attempted):
+					student_info.total_karma_points += question_info.marks
+					karma_history.karma_points += question_info.marks
+
+				student_info.save()
+				karma_history.save()
 
 			else:
 				sub = models.Classcast_test_submission(student_id=student_id, 
