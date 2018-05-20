@@ -68,7 +68,7 @@ class Classcast_student_info(models.Model):
 
 class Classcast_karma_history(models.Model):
     student_id = models.IntegerField(null=False, primary_key=True)
-    date = models.DateField(_("Date"), default=datetime.date.today)
+    date = models.DateField(primary_key=True, default=datetime.date.today)
     karma_points = models.FloatField() 
 
     class Meta:
