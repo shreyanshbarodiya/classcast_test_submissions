@@ -4,6 +4,7 @@ import api
 from django.http import JsonResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt  
+from datetime import date
 
 def hello(request):
    text = """<h1>welcome to my app !</h1>"""
@@ -35,6 +36,17 @@ def newsubmission(request):
 			timestamp = request.POST.get('timestamp')
 			appeared_in_test = int(request.POST.get('appeared_in_test'))
 			appeared_in_gym = int(request.POST.get('appeared_in_gym'))
+			# datestamp = take out the date only from the timestamp 
+
+			question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
+			student_info = models.Classcast_student_info.objects.get(student_id=student_id)
+			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=date.today)
+
+			#update in classcast_test_submissions table
+			#update in classcast_student_info table: karma points
+			#update in classcast_karma_history
+			#update in question's difficulty
+			#update in student's chapterwise/subjectwise ranks/marks
 
 			if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
 				entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
@@ -53,22 +65,30 @@ def newsubmission(request):
 				return JsonResponse({'status': 'True', 'message': 'Success'})
 			else:
 				if(attempted==1):
-					s1 = models.Classcast_test_submission(student_id=student_id, 
+					sub = models.Classcast_test_submission(student_id=student_id, 
 						xblock_id=xblock_id, num_attempts=1, num_skips=0, 
 						num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
 						average_time_skip=0, timestamp=timestamp)
-					s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-					s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-					s1.save()		
+					sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+					sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+					sub.save()
+
+					student_info.total_karma_points += question_info.marks
+					karma_history.total_karma_points += question_info.marks
+
 				else:
-					s1 = models.Classcast_test_submission(student_id=student_id, 
+					sub = models.Classcast_test_submission(student_id=student_id, 
 						xblock_id=xblock_id, num_attempts=0, num_skips=1, 
 						num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
 				
-					s1.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-					s1.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-					s1.save()
+					sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+					sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+					sub.save()
 				return JsonResponse({'status': 'True', 'message': 'Success'})
+
+
+
+
 
 		except Exception, e:
 			return JsonResponse({'status': 'False', 'message': 'Database error'})
