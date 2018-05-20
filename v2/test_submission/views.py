@@ -74,7 +74,7 @@ def newsubmission(request):
 				sub.save()
 
 				student_info.total_karma_points += question_info.marks
-				karma_history.total_karma_points += question_info.marks
+				karma_history.karma_points += question_info.marks
 
 			else:
 				sub = models.Classcast_test_submission(student_id=student_id, 
