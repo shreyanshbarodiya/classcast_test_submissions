@@ -41,7 +41,7 @@ class Classcast_questions(models.Model):
     num_correct_submissions = models.IntegerField()
     average_time_to_answer = models.FloatField()
     tags = models.CharField()
-    exam_apperances = models.IntegerField()
+    exam_appearances = models.IntegerField()
     num_deliveries = models.IntegerField()
     num_skipped = models.IntegerField()
 

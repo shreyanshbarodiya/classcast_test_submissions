@@ -46,11 +46,11 @@ def newsubmission(request):
 		else:
 			karma_history = models.Classcast_karma_history(student_id=student_id, date=date.today, karma_points=0)
 
-		#update in classcast_test_submissions table
-		#update in classcast_student_info table: karma points
-		#update in classcast_karma_history
-		#update in question's difficulty
-		#update in student's chapterwise/subjectwise ranks/marks
+		#update in classcast_test_submissions table - how to update status?
+		#update in classcast_student_info table: karma points - done - only when correctly attempted
+		#update in classcast_karma_history - only when correctly attempted
+		#update in question's difficulty - ? 
+		#update in student's chapterwise/subjectwise ranks/marks - ?
 
 		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
 			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
