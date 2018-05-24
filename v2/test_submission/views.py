@@ -44,7 +44,7 @@ def newsubmission(request):
 		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=date.today).exists():
 			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=date.today)
 		else:
-			karma_history = models.Classcast_karma_history(student_id=student_id, date=date.today, karma_points=0)
+			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(date.today), karma_points=0)
 
 		#update in classcast_test_submissions table - how to update status?
 		#update in classcast_student_info table: karma points - done - only when correctly attempted
