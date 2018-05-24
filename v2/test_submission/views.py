@@ -19,7 +19,7 @@ def allsubmissions(request, user_id):
 
 def update_submission_status(entry):
 	tmp = 5*(entry.num_attempts + entry.num_skips - entry.num_incorrect_attempts)/(entry.num_attempts + entry.num_skips)
-	return round(tmp*5)
+	return round(tmp)
 
 
 #update in classcast_test_submissions table 
