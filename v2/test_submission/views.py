@@ -17,6 +17,16 @@ def allsubmissions(request, user_id):
 	res_json = serializers.serialize('json', res)
 	return HttpResponse(res_json, content_type='application/json')
 
+def update_submission_status(entry):
+	tmp = (entry.num_attempts + entry.num_skips - entry.num_incorrect_attempts)/(entry.num_attempts + entry.num_skips)
+	return int(tmp*10)
+
+
+#update in classcast_test_submissions table 
+#update in classcast_student_info table: karma points - done - only when correctly attempted
+#update in classcast_karma_history - done - only when correctly attempted
+#update in question's difficulty - ? 
+#update in student's chapterwise/subjectwise ranks/marks - ?
 @csrf_exempt
 def newsubmission(request):
 	# if not request.user.is_authenticated():
@@ -36,7 +46,6 @@ def newsubmission(request):
 		timestamp = request.POST.get('timestamp')
 		appeared_in_test = int(request.POST.get('appeared_in_test'))
 		appeared_in_gym = int(request.POST.get('appeared_in_gym'))
-		# datestamp = take out the date only from the timestamp 
 
 		question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
 		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
@@ -46,11 +55,6 @@ def newsubmission(request):
 		else:
 			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
 
-		#update in classcast_test_submissions table - how to update status?
-		#update in classcast_student_info table: karma points - done - only when correctly attempted
-		#update in classcast_karma_history - only when correctly attempted
-		#update in question's difficulty - ? 
-		#update in student's chapterwise/subjectwise ranks/marks - ?
 
 		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
 			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
@@ -65,6 +69,7 @@ def newsubmission(request):
 				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
 			
 			entry.timestamp = timestamp
+			entry.status = update_submission_status(entry)
 			entry.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 		else:
@@ -75,6 +80,7 @@ def newsubmission(request):
 					average_time_skip=0, timestamp=timestamp)
 				sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 				sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				sub.status = update_submission_status(sub)
 				sub.save()
 
 				if(correctly_attempted):
@@ -87,10 +93,8 @@ def newsubmission(request):
 			else:
 				sub = models.Classcast_test_submission(student_id=student_id, 
 					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
-					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
-			
-				# sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-				# sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)			
+				sub.status = update_submission_status(sub)
 				sub.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 
