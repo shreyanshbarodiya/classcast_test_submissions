@@ -58,13 +58,13 @@ def newsubmission(request):
 				entry.num_attempts += 1
 				entry.num_incorrect_attempts += 1 - correctly_attempted
 				entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
+				entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
+				entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
 			else:
 				entry.num_skips += 1
 				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
 			
 			entry.timestamp = timestamp
-			entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
-			entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
 			entry.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 		else:
