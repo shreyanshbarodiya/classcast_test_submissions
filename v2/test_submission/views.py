@@ -89,8 +89,8 @@ def newsubmission(request):
 					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
 					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)
 			
-				sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-				sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+				# sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+				# sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
 				sub.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 
