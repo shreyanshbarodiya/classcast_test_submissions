@@ -19,7 +19,7 @@ def allsubmissions(request, user_id):
 
 def update_submission_status(entry):
 	tmp = (entry.num_attempts + entry.num_skips - entry.num_incorrect_attempts)/(entry.num_attempts + entry.num_skips)
-	return int(tmp*10)
+	return int(tmp*5)
 
 
 #update in classcast_test_submissions table 
@@ -93,7 +93,9 @@ def newsubmission(request):
 			else:
 				sub = models.Classcast_test_submission(student_id=student_id, 
 					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
-					num_incorrect_attempts=0 , average_time_attempt=0, average_time_skip=time_taken, timestamp=timestamp)			
+					num_incorrect_attempts=0 , average_time_attempt=0, 
+					average_time_skip=time_taken, timestamp=timestamp,
+					correctly_attempted_in_test=False, correctly_attempted_in_gym=False)			
 				sub.status = update_submission_status(sub)
 				sub.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
