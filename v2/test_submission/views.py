@@ -69,7 +69,7 @@ def newsubmission(request):
 				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
 			
 			entry.timestamp = timestamp
-			entry.status = update_submission_status(entry)
+			entry.curr_status = update_submission_status(entry)
 			entry.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 		else:
@@ -80,7 +80,7 @@ def newsubmission(request):
 					average_time_skip=0, timestamp=timestamp)
 				sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
 				sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-				sub.status = update_submission_status(sub)
+				sub.curr_status = update_submission_status(sub)
 				sub.save()
 
 				if(correctly_attempted):
@@ -96,7 +96,7 @@ def newsubmission(request):
 					num_incorrect_attempts=0 , average_time_attempt=0, 
 					average_time_skip=time_taken, timestamp=timestamp,
 					correctly_attempted_in_test=False, correctly_attempted_in_gym=False)			
-				sub.status = update_submission_status(sub)
+				sub.curr_status = update_submission_status(sub)
 				sub.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 
