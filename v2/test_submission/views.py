@@ -4,7 +4,7 @@ import api
 from django.http import JsonResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt  
-from datetime import date
+import datetime
 
 def hello(request):
    text = """<h1>welcome to my app !</h1>"""
@@ -41,10 +41,10 @@ def newsubmission(request):
 		question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
 		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
 
-		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=date.today).exists():
-			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=date.today)
+		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=datetime.date.today).exists():
+			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=datetime.date.today)
 		else:
-			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(date.today.strftime('%Y-%m-%d')), karma_points=0)
+			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
 
 		#update in classcast_test_submissions table - how to update status?
 		#update in classcast_student_info table: karma points - done - only when correctly attempted
