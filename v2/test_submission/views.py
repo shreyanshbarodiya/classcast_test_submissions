@@ -18,7 +18,7 @@ def allsubmissions(request, user_id):
 	return HttpResponse(res_json, content_type='application/json')
 
 def update_submission_status(entry):
-	tmp = 5*(entry.num_attempts + entry.num_skips - entry.num_incorrect_attempts)/(entry.num_attempts + entry.num_skips)
+	tmp = 5*(entry.num_attempts - entry.num_incorrect_attempts)/(entry.num_attempts + entry.num_skips)
 	return round(tmp)
 
 
