@@ -1,12 +1,14 @@
 """
-classcast test submissions URI specification.
-Patterns here should simply point to version-specific patterns.
+test submission v1 URL specification
 """
-from django.conf.urls import include, url, patterns
+from django.conf.urls import url, patterns
+import views
 
 urlpatterns = patterns(
     '',
-
-    url(r'^v1/', include('classcast_test_submissions.v1.urls')),
-    url(r'^v2/', include('classcast_test_submissions.v2.urls')),
+    # url(r'^allsubmissions/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.AllTestSubmissions.as_view()),
+    url(r'^hello$', views.hello, name = 'hello'),
+    url(r'^curruser$', views.curruser, name = 'curruser'),
+	url(r'^allsubmissions/(?P<user_id>[A-Za-z0-9_.-]+)/$', views.allsubmissions, name='allsubmissions'),
+	url(r'^newsubmission$', views.newsubmission, name='newsubmission'),
 )
