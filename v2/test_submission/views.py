@@ -34,74 +34,74 @@ def newsubmission(request):
 
 	if(request.method == "GET"):
 		return JsonResponse({'status': 'False', 'message': 'Get request'})
+
+	# try:
+
+	# student_id = request.user.id
+	student_id = int(request.POST.get('student_id'))
+	xblock_id = request.POST.get('xblock_id')
+	attempted = int(request.POST.get('attempted'))
+	correctly_attempted = int(request.POST.get('correctly_attempted'))
+	time_taken = float(request.POST.get('time_taken'))
+	timestamp = request.POST.get('timestamp')
+	appeared_in_test = int(request.POST.get('appeared_in_test'))
+	appeared_in_gym = int(request.POST.get('appeared_in_gym'))
+
+	question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
+	student_info = models.Classcast_student_info.objects.get(student_id=student_id)
+
+	if models.Classcast_karma_history.objects.filter(student_id=student_id, date=datetime.date.today).exists():
+		karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=datetime.date.today)
 	else:
-		# try:
+		karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
 
-		# student_id = request.user.id
-		student_id = int(request.POST.get('student_id'))
-		xblock_id = request.POST.get('xblock_id')
-		attempted = int(request.POST.get('attempted'))
-		correctly_attempted = int(request.POST.get('correctly_attempted'))
-		time_taken = float(request.POST.get('time_taken'))
-		timestamp = request.POST.get('timestamp')
-		appeared_in_test = int(request.POST.get('appeared_in_test'))
-		appeared_in_gym = int(request.POST.get('appeared_in_gym'))
 
-		question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
-		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
-
-		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=datetime.date.today).exists():
-			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=datetime.date.today)
+	if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
+		entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
+		if(attempted==1):
+			entry.num_attempts += 1
+			entry.num_incorrect_attempts += 1 - correctly_attempted
+			entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
+			entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
+			entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
 		else:
-			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
+			entry.num_skips += 1
+			entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
+		
+		entry.timestamp = timestamp
+		entry.curr_status = update_submission_status(entry)
+		entry.save()
+		return JsonResponse({'status': 'True', 'message': 'Success'})
+	else:
+		if(attempted==1):
+			sub = models.Classcast_test_submission(student_id=student_id, 
+				xblock_id=xblock_id, num_attempts=1, num_skips=0, 
+				num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
+				average_time_skip=0, timestamp=timestamp)
+			sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
+			sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
+			sub.curr_status = update_submission_status(sub)
+			sub.save()
 
+			if(correctly_attempted):
+				student_info.total_karma_points += question_info.marks
+				karma_history.karma_points += question_info.marks
 
-		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
-			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
-			if(attempted==1):
-				entry.num_attempts += 1
-				entry.num_incorrect_attempts += 1 - correctly_attempted
-				entry.average_time_attempt = ((entry.average_time_attempt*(entry.num_attempts-1)) + time_taken)/entry.num_attempts
-				entry.correctly_attempted_in_test = entry.correctly_attempted_in_test or (appeared_in_test and correctly_attempted)
-				entry.correctly_attempted_in_gym = entry.correctly_attempted_in_gym or (appeared_in_gym and correctly_attempted)
-			else:
-				entry.num_skips += 1
-				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
-			
-			entry.timestamp = timestamp
-			entry.curr_status = update_submission_status(entry)
-			entry.save()
-			return JsonResponse({'status': 'True', 'message': 'Success'})
+			student_info.save()
+			karma_history.save()
+
 		else:
-			if(attempted==1):
-				sub = models.Classcast_test_submission(student_id=student_id, 
-					xblock_id=xblock_id, num_attempts=1, num_skips=0, 
-					num_incorrect_attempts=1-correctly_attempted , average_time_attempt=time_taken, 
-					average_time_skip=0, timestamp=timestamp)
-				sub.correctly_attempted_in_test = (appeared_in_test and correctly_attempted)
-				sub.correctly_attempted_in_gym = (appeared_in_gym and correctly_attempted)
-				sub.curr_status = update_submission_status(sub)
-				sub.save()
+			sub = models.Classcast_test_submission(student_id=student_id, 
+				xblock_id=xblock_id, num_attempts=0, num_skips=1, 
+				num_incorrect_attempts=0 , average_time_attempt=0, 
+				average_time_skip=time_taken, timestamp=timestamp,
+				correctly_attempted_in_test=False, correctly_attempted_in_gym=False)			
+			sub.curr_status = update_submission_status(sub)
+			sub.save()
+		return JsonResponse({'status': 'True', 'message': 'Success'})
 
-				if(correctly_attempted):
-					student_info.total_karma_points += question_info.marks
-					karma_history.karma_points += question_info.marks
-
-				student_info.save()
-				karma_history.save()
-
-			else:
-				sub = models.Classcast_test_submission(student_id=student_id, 
-					xblock_id=xblock_id, num_attempts=0, num_skips=1, 
-					num_incorrect_attempts=0 , average_time_attempt=0, 
-					average_time_skip=time_taken, timestamp=timestamp,
-					correctly_attempted_in_test=False, correctly_attempted_in_gym=False)			
-				sub.curr_status = update_submission_status(sub)
-				sub.save()
-			return JsonResponse({'status': 'True', 'message': 'Success'})
-
-		# except Exception, e:
-			# return JsonResponse({'status': 'False', 'message': 'Database error'})
+	# except Exception, e:
+		# return JsonResponse({'status': 'False', 'message': 'Database error'})
 
 def curruser(request):
 

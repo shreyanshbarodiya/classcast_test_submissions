@@ -29,7 +29,7 @@ class Classcast_questions(models.Model):
     stream = models.CharField()
     subject = models.CharField()
     goal = models.CharField()
-    difficulty = models.CharField()
+    difficulty = models.IntegerField()
     marks = models.IntegerField()
     chapter = models.CharField()
     topic = models.CharField()
