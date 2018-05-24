@@ -10,6 +10,7 @@ class Classcast_test_submission(models.Model):
     num_incorrect_attempts = models.IntegerField()
     average_time_attempt = models.FloatField()
     average_time_skip = models.FloatField()
+    curr_status = models.IntegerField()
     timestamp = models.DateTimeField()
     correctly_attempted_in_test = models.BooleanField()
     correctly_attempted_in_gym = models.BooleanField()
