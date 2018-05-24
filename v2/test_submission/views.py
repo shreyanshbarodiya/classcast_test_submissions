@@ -40,7 +40,11 @@ def newsubmission(request):
 
 		question_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
 		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
-		karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=date.today)
+
+		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=date.today).exists():
+			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=date.today)
+		else:
+			karma_history = models.Classcast_karma_history(student_id=student_id, date=date.today, karma_points=0)
 
 		#update in classcast_test_submissions table
 		#update in classcast_student_info table: karma points
