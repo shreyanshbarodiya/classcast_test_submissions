@@ -51,9 +51,6 @@ def newsubmission(request):
 	student_info = models.Classcast_student_info.objects.get(student_id=student_id)
 	topic_info = topics.objects.get(standard=q_info.standard, subject=q_info.subject, chapter=q_info.chapter, topic_name=q_info.topic)
 	
-
-	s_t_interaction = student_topic_interaction.objects.get(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
-
 	if student_topic_interaction.objects.filter(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
 		s_t_interaction = student_topic_interaction.objects.get(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
 	else:
@@ -64,7 +61,6 @@ def newsubmission(request):
 		karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=datetime.date.today)
 	else:
 		karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
-
 
 	# An entry exists in classcast_test_submissions
 	if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
@@ -121,7 +117,7 @@ def newsubmission(request):
 			sub.save()
 			s_t_interaction.num_skipped += 1
 			s_t_interaction.save()
-			
+
 		return JsonResponse({'status': 'True', 'message': 'Success'})
 
 	# except Exception, e:
