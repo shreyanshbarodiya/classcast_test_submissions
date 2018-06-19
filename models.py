@@ -63,7 +63,8 @@ class Classcast_student_info(models.Model):
     last_active = models.DateTimeField()
     total_karma_points = models.FloatField()
     phone_number = models.CharField()
-    
+    DOB = models.DateField()
+
     class Meta:
         db_table = 'classcast_student_info'
 
