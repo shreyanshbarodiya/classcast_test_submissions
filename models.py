@@ -62,6 +62,7 @@ class Classcast_student_info(models.Model):
     active_status = models.CharField()
     last_active = models.DateTimeField()
     total_karma_points = models.FloatField()
+    phone_number = models.CharField()
     
     class Meta:
         db_table = 'classcast_student_info'
