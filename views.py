@@ -49,12 +49,12 @@ def newsubmission(request):
 
 		q_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
 		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
-		topic_info = topics.objects.get(standard=q_info.standard, subject=q_info.subject, chapter=q_info.chapter, topic_name=q_info.topic)
+		topic_info = topics.objects.get(chapter__standard=q_info.standard, chapter__subject=q_info.subject, chapter__chapter=q_info.chapter, topic_name=q_info.topic)
 		
-		if student_topic_interaction.objects.filter(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
-			s_t_interaction = student_topic_interaction.objects.get(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
+		if student_topic_interaction.objects.filter(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
+			s_t_interaction = student_topic_interaction.objects.get(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
 		else:
-			s_t_interaction = student_topic_interaction(student_id=student_id, topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
+			s_t_interaction = student_topic_interaction(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
 
 
 		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=datetime.date.today).exists():
