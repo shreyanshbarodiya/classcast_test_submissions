@@ -37,7 +37,7 @@ def newsubmission(request):
 		return JsonResponse({'status': 'False', 'message': 'Get request'})
 
 	try:
-	# student_id = request.user.id
+		# student_id = request.user.id
 		student_id = int(request.POST.get('student_id'))
 		xblock_id = request.POST.get('xblock_id')
 		attempted = int(request.POST.get('attempted'))
@@ -52,15 +52,14 @@ def newsubmission(request):
 		timestamp = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
 		appeared_in_test = int(request.POST.get('appeared_in_test'))
 		appeared_in_gym = int(request.POST.get('appeared_in_gym'))
-		print("1 pe aaya ")
 		q_info = question.objects.get(xblock_id=xblock_id)
 		this_student=User.objects.get(id=student_id)
 		student_info = models.Classcast_student_info.objects.get(student=this_student)
 		topic_info = topics.objects.get(chapter__standard=q_info.standard, chapter__subject=q_info.subject, chapter__chapter=q_info.chapter, topic_name=q_info.topic)
 		#print(student_id)
-		
+
 		if student_topic_interaction.objects.filter(student=this_student, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
-			s_t_interaction = student_topic_interaction.objects.get(student__id=this_student, topic=topic_info, difficulty=q_info.difficulty)
+			s_t_interaction = student_topic_interaction.objects.get(student=this_student, topic=topic_info, difficulty=q_info.difficulty)
 		else:
 			#topic=topics.objects.get(topic_id=topic_info.topic_id)
 			s_t_interaction = student_topic_interaction(student=this_student, topic=topic_info, difficulty=q_info.difficulty)
@@ -71,8 +70,8 @@ def newsubmission(request):
 			karma_history = models.Classcast_karma_history(student=this_student, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
 
 		# An entry exists in classcast_test_submissions
-		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
-			entry = models.Classcast_test_submission.objects.get(student_id=student_id, xblock_id=xblock_id)
+		if models.Classcast_test_submission.objects.filter(student=this_student, xblock_id=xblock_id).exists():
+			entry = models.Classcast_test_submission.objects.get(student=this_student, xblock_id=xblock_id)
 			if(attempted==1):
 				entry.num_attempts += 1
 				entry.num_incorrect_attempts += 1 - correctly_attempted
@@ -91,7 +90,7 @@ def newsubmission(request):
 			entry.save()
 			s_t_interaction.save()
 			return JsonResponse({'status': 'True', 'message': 'Success'})
-		
+
 		# A new entry is made in classcast_test_submissions
 		else:
 			if(attempted==1):
