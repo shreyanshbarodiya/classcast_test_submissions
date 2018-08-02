@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt  
 import datetime
-from classcast.classcast_search_fetch.models import student_topic_interaction, topics
+from classcast_search_fetch.models import student_topic_interaction, topics,question
+from django.contrib.auth.models import User
 
 def hello(request):
    text = """<h1>welcome to my app !</h1>"""
@@ -36,31 +37,38 @@ def newsubmission(request):
 		return JsonResponse({'status': 'False', 'message': 'Get request'})
 
 	try:
-
-		# student_id = request.user.id
+	# student_id = request.user.id
 		student_id = int(request.POST.get('student_id'))
 		xblock_id = request.POST.get('xblock_id')
 		attempted = int(request.POST.get('attempted'))
 		correctly_attempted = int(request.POST.get('correctly_attempted'))
-		time_taken = float(request.POST.get('time_taken'))
-		timestamp = request.POST.get('timestamp')
+		time_taken = (request.POST.get('time_taken'))
+		if time_taken:
+			time_taken = float(request.POST.get('time_taken'))
+		else:
+			#assignning default time of 180 sec if not available 
+			time_taken=180.0
+		#get current time stamp
+		timestamp = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))
 		appeared_in_test = int(request.POST.get('appeared_in_test'))
 		appeared_in_gym = int(request.POST.get('appeared_in_gym'))
-
-		q_info = models.Classcast_questions.objects.get(xblock_id=xblock_id)
-		student_info = models.Classcast_student_info.objects.get(student_id=student_id)
+		print("1 pe aaya ")
+		q_info = question.objects.get(xblock_id=xblock_id)
+		this_student=User.objects.get(id=student_id)
+		student_info = models.Classcast_student_info.objects.get(student=this_student)
 		topic_info = topics.objects.get(chapter__standard=q_info.standard, chapter__subject=q_info.subject, chapter__chapter=q_info.chapter, topic_name=q_info.topic)
+		#print(student_id)
 		
-		if student_topic_interaction.objects.filter(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
-			s_t_interaction = student_topic_interaction.objects.get(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
+		if student_topic_interaction.objects.filter(student=this_student, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty).exists():
+			s_t_interaction = student_topic_interaction.objects.get(student__id=this_student, topic=topic_info, difficulty=q_info.difficulty)
 		else:
-			s_t_interaction = student_topic_interaction(student__id=student_id, topic__topic_id=topic_info.topic_id, difficulty=q_info.difficulty)
+			#topic=topics.objects.get(topic_id=topic_info.topic_id)
+			s_t_interaction = student_topic_interaction(student=this_student, topic=topic_info, difficulty=q_info.difficulty)
 
-
-		if models.Classcast_karma_history.objects.filter(student_id=student_id, date=datetime.date.today).exists():
-			karma_history = models.Classcast_karma_history.objects.get(student_id=student_id, date=datetime.date.today)
+		if models.Classcast_karma_history.objects.filter(student=this_student, date=str(datetime.date.today().strftime('%Y-%m-%d'))).exists():
+			karma_history = models.Classcast_karma_history.objects.get(student=this_student, date=str(datetime.date.today().strftime('%Y-%m-%d')))
 		else:
-			karma_history = models.Classcast_karma_history(student_id=student_id, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
+			karma_history = models.Classcast_karma_history(student=this_student, date=str(datetime.datetime.strftime(datetime.datetime.today(),'%Y-%m-%d')), karma_points=0)
 
 		# An entry exists in classcast_test_submissions
 		if models.Classcast_test_submission.objects.filter(student_id=student_id, xblock_id=xblock_id).exists():
@@ -78,7 +86,7 @@ def newsubmission(request):
 				entry.average_time_skip = ((entry.average_time_skip*(entry.num_skips-1)) + time_taken)/entry.num_skips
 				s_t_interaction.num_skipped += 1
 			
-			entry.timestamp = timestamp
+			#entry.timestamp = timestamp
 			entry.curr_status = update_submission_status(entry)
 			entry.save()
 			s_t_interaction.save()
@@ -121,7 +129,7 @@ def newsubmission(request):
 			return JsonResponse({'status': 'True', 'message': 'Success'})
 
 	except Exception, e:
-		return JsonResponse({'status': 'False', 'message': 'Database error'})
+		return JsonResponse({'status': 'False', 'message': 'Some error occured,: {}'.format(e)})
 
 def curruser(request):
 
@@ -130,3 +138,6 @@ def curruser(request):
 	else:
 		res = 'Not authenticated'
 	return HttpResponse(res)
+
+
+
